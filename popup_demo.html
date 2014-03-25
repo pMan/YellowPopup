@@ -1,0 +1,23 @@
+<html>
+<head>
+	<style>
+		/* style 1 */
+		#yellow_popup { box-shadow: 7px 7px 27px 0 #CBCBCB;width:800px;height: 420px;border: 1px solid #AEAEAE;position: fixed; }
+		#yellow_header { border: 1px solid #BEBEBE;margin: 4px;padding: 4px;width: auto;line-height: 20px;cursor: crosshair; }
+		#yellow_close { padding: 4px;float: right;width: auto;font-family: Comic Sans MS,serif;line-height: 12px;cursor: pointer; }
+		#yellow_iframe { border: 0 none;display: table;margin: auto;width: 99%; }
+	</style>
+	<script type="text/javascript" src="yellow_popup.js"></script>
+	<script type="text/javascript">
+		function show(title) {
+			var opt = {title: title, animate: true}
+			var m = new YellowPopup(opt);
+			m.init();
+		}
+	</script>
+</head>
+<body style="width:100%;">
+	<a href="#" onclick="show('lookup');" tabIndex="1">show popup</a> <br/>
+	<a href="#" onclick="show('loooooooooo');" tabIndex="1">show again</a>
+<body>
+</html>
