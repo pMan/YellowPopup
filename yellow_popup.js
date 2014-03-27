@@ -19,21 +19,22 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ****************************************************************************/
 var YellowPopup = (function(ops) {
-	var options = {};
-	options['title']	= "Lookup Dictionaries & Thesaurus";
-	options['close']	= "X";
-	options['top']		= "100";
-	options['left']		= "180";
-	options['animate']	= true;
-	options['href']		= "http://karmicbee.com"
-	
+	var options = {
+		'title'	: "Lookup Dictionaries & Thesaurus",
+		'close'	: "X",
+		'top'	: "100",
+		'left'	: "180",
+		'href'	: "http://karmicbee.com/about"
+	};
+
 	var isMouseDown = false, xInit =0, yInit = 0;
 	
 	var popupDiv	= document.createElement("div");
 	var headerDiv	= popupDiv.cloneNode();
 	var closeDiv	= popupDiv.cloneNode();
 	var iframe		= document.createElement("iframe");
-	
+	var moverDiv;
+		
 	var popup = function(ops) {
 		// equivalent to jQuery.extend
 		for (var prop in ops) {
@@ -45,25 +46,24 @@ var YellowPopup = (function(ops) {
 	popup.prototype.init = function(op) {
 		
 		// set popup properties	
-		popupDiv.setAttribute("id", "yellow_popup");
-		popupDiv.setAttribute("style", "");
+		popupDiv.setAttribute("class", "yellow_popup bxshd");
 		popupDiv.style.top = options['top'] + "px";
 		popupDiv.style.left = options['left'] + "px";
 		document.body.appendChild(popupDiv);
 		
 		// set popup header properties
-		headerDiv.setAttribute("id", "yellow_header");
+		headerDiv.setAttribute("class", "yellow_header");
 		headerDiv.innerHTML = options['title'];
 		popupDiv.appendChild(headerDiv);
 		
 		// set close button properties
-		closeDiv.setAttribute("id", "yellow_close");
+		closeDiv.setAttribute("class", "yellow_close");
 		closeDiv.innerHTML = options['close'];
 		headerDiv.appendChild(closeDiv);
 		
 		// iframe to load data
 		popupDiv.appendChild(iframe);
-		iframe.setAttribute("id", "yellow_iframe");
+		iframe.setAttribute("class", "yellow_iframe");
 		
 		// set 'loading...' in the popup and then set url
 		iframe.contentDocument.write("<html><body><div style='width:100%; "+
@@ -88,6 +88,10 @@ var YellowPopup = (function(ops) {
 	// mouseup even handler
 	popup.prototype.mouseUpListener = function(e) {
 		isMouseDown = false;
+		popupDiv.style.top = moverDiv.style.top;
+		popupDiv.style.left = moverDiv.style.left;
+		
+		moverDiv.parentNode.removeChild(moverDiv);
 	};
 	
 	// click handler
@@ -99,7 +103,13 @@ var YellowPopup = (function(ops) {
 	popup.prototype.mouseDownListener = function(e) {
 		xInit	= e.clientX;
 		yInit	= e.clientY;
-	
+		moverDiv = popupDiv.cloneNode();
+		moverDiv.innerHTML = "";
+		moverDiv.setAttribute("class", "yellow_popup");
+		moverDiv.style.opacity = "0.5";
+		
+		document.body.appendChild(moverDiv);
+		
 		isMouseDown = true;
 	};
 	
@@ -108,12 +118,15 @@ var YellowPopup = (function(ops) {
 		// check for click + drag
 		if (! isMouseDown) return false;
 		
-		options['top'] = parseInt(popupDiv.style.top); // to remove "px"
-		options['left'] = parseInt(popupDiv.style.left);
+		//options['top'] = parseInt(popupDiv.style.top); // to remove "px"
+		//options['left'] = parseInt(popupDiv.style.left);
+		
+		options['top'] = parseInt(moverDiv.style.top); // to remove "px"
+		options['left'] = parseInt(moverDiv.style.left);
 		
 		// reset coords position
-		popupDiv.style.top	= options['top'] + e.clientY - yInit;
-		popupDiv.style.left	= options['left'] + e.clientX - xInit;
+		moverDiv.style.top	= options['top'] + e.clientY - yInit;
+		moverDiv.style.left	= options['left'] + e.clientX - xInit;
 		
 		// set new initial positions
 		xInit	= e.clientX;
