@@ -33,8 +33,9 @@ var YellowPopup = (function(ops) {
 	var headerDiv	= popupDiv.cloneNode();
 	var closeDiv	= popupDiv.cloneNode();
 	var iframe		= document.createElement("iframe");
+	var title		= document.createElement("span");
 	var moverDiv;
-		
+	
 	var popup = function(ops) {
 		// equivalent to jQuery.extend
 		for (var prop in ops) {
@@ -51,15 +52,20 @@ var YellowPopup = (function(ops) {
 		popupDiv.style.left = options['left'] + "px";
 		document.body.appendChild(popupDiv);
 		
-		// set popup header properties
-		headerDiv.setAttribute("class", "yellow_header");
-		headerDiv.innerHTML = options['title'];
-		popupDiv.appendChild(headerDiv);
+		// set title properties
+		title.setAttribute("class", "yellow_title");
+		title.innerHTML = options['title'];
 		
 		// set close button properties
 		closeDiv.setAttribute("class", "yellow_close");
 		closeDiv.innerHTML = options['close'];
-		headerDiv.appendChild(closeDiv);
+		
+		// set popup header properties
+		headerDiv.setAttribute("class", "yellow_header");
+		//headerDiv.appendChild(title);
+		//headerDiv.appendChild(closeDiv);
+		this.setupHeader(title, closeDiv);
+		popupDiv.appendChild(headerDiv);
 		
 		// iframe to load data
 		popupDiv.appendChild(iframe);
@@ -72,10 +78,31 @@ var YellowPopup = (function(ops) {
 		iframe.setAttribute("src", options['href']);
 		this.resizeIframe();
 		
-		closeDiv.addEventListener("click", this.closeListener, false);
-		headerDiv.addEventListener("mousedown", this.mouseDownListener, false);
 		document.addEventListener("mousemove", this.mouseMoveListener, false);
 		document.addEventListener("mouseup", this.mouseUpListener, false);
+	};
+	
+	popup.prototype.setupHeader = function(title, close) {
+		headerDiv.innerHTML = "";
+		
+		var titleTd = document.createElement("td");
+		titleTd.appendChild(title);
+		titleTd.addEventListener("mousedown", this.mouseDownListener, false);
+		
+		var closeTd = document.createElement("td");
+		closeTd.style.width = "20px";
+		closeTd.appendChild(close);
+		closeTd.addEventListener("click", this.closeListener, true);
+		
+		var tr = document.createElement("tr");
+		tr.appendChild(titleTd);
+		tr.appendChild(closeTd);
+		
+		var table = document.createElement("table");
+		table.style.width = "100%";
+		table.appendChild(tr);
+		
+		headerDiv.appendChild(table);
 	};
 	
 	// resizes the iframe
@@ -95,7 +122,9 @@ var YellowPopup = (function(ops) {
 	};
 	
 	// click handler
-	popup.prototype.closeListener = function() {
+	popup.prototype.closeListener = function(e) {
+		e.preventDefault();
+		e.stopPropagation();
 		popupDiv.parentNode.removeChild(popupDiv);
 	};
 	
