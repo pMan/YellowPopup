@@ -1,14 +1,16 @@
 <html>
 <head>
 	<style>
+	
+		.noselect { -webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
 		/* style 1 */
 		.yellow_popup { background-color:#ffffff;width:800px;height: 420px;border: 1px solid #AEAEAE;position: fixed; }
 		.bxshd { box-shadow: 7px 7px 27px 0 #CBCBCB; }
 		.yellow_header { border: 1px solid #BEBEBE;margin: 4px;padding: 4px;width: auto;line-height: 20px;cursor: crosshair; }
 		.yellow_close { padding: 4px;float: right;width: auto;font-family: Comic Sans MS,serif;line-height: 12px;cursor: pointer; }
 		.yellow_iframe { border: 0 none;display: table;margin: auto;width: 99%; }
+		.yellow_drag { width: 0; height: 0; border-bottom: 14px solid #DBDBDB; border-left: 14px solid transparent; position:absolute;right:0;bottom:0; cursor:pointer;}
 	</style>
-	<script type="text/javascript" src="yellow_popup.js"></script>
 	<script type="text/javascript">
 		function show(title) {
 			var opt = {title: title, animate: true}
@@ -20,5 +22,6 @@
 <body style="width:100%;">
 	<a href="#" onclick="show('lookup');" tabIndex="1">show popup</a> <br/>
 	<a href="#" onclick="show('loooooooooo');" tabIndex="1">show again</a>
+	<script type="text/javascript" src="yellow.js"></script>
 <body>
 </html>
