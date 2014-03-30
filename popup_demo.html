@@ -4,18 +4,18 @@
 	
 		.noselect { -webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
 		/* style 1 */
-		.yellow_popup { background-color:#ffffff;width:800px;height: 420px;border: 1px solid #AEAEAE;position: fixed; }
+		.lolli_popup { background-color:#ffffff;width:800px;height: 420px;border: 1px solid #AEAEAE;position: fixed; }
 		.bxshd { box-shadow: 7px 7px 27px 0 #CBCBCB; }
-		.yellow_header { border: 1px solid #BEBEBE;margin: 4px;padding: 4px;width: auto;line-height: 20px;cursor: crosshair; }
-		.yellow_close { padding: 4px;float: right;width: auto;font-family: Comic Sans MS,serif;line-height: 12px;cursor: pointer; }
-		.yellow_iframe { border: 0 none;display: table;margin: auto;width: 99%; }
-		.yellow_drag { width: 0; height: 0; border-bottom: 14px solid #DBDBDB; border-left: 14px solid transparent; position:absolute;right:0;bottom:0; cursor:pointer;}
+		.lolli_header { border: 1px solid #BEBEBE;margin: 4px;padding: 4px;width: auto;line-height: 20px;cursor: crosshair; }
+		.lolli_close { padding: 4px;float: right;width: auto;font-family: Comic Sans MS,serif;line-height: 12px;cursor: pointer; }
+		.lolli_iframe { border: 0 none;display: table;margin: auto;width: 99%; }
+		.lolli_drag { width: 0; height: 0; border-bottom: 14px solid #DBDBDB; border-left: 14px solid transparent; position:absolute;right:0;bottom:0; cursor:pointer;}
 	</style>
 	<script type="text/javascript">
 		function show(title) {
 			var opt = {title: title, animate: true}
-			var m = new YellowPopup(opt);
-			m.init();
+			var popup = new Lollipop(opt);
+			popup.init();
 		}
 	</script>
 </head>

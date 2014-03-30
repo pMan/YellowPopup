@@ -1,6 +1,7 @@
 /****************************************************************************
-    Yellow is a light weight, customizable, draggable javascript popup
-    which is designed to avoid loading heavy libraries just for a popup.
+    Lollipop is a light weight, customizable, draggable  and resizeable
+    javascript popup which is designed to avoid loading heavy libraries just
+    for a popup.
     
     Copyright (C) 2014 pMan and karmicbee.
 
@@ -18,7 +19,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ****************************************************************************/
-var YellowPopup = (function(ops) {
+var Lollipop = (function(ops) {
 	var options = {
 		'title'	: "Lookup Dictionaries & Thesaurus",
 		'close'	: "X",
@@ -60,21 +61,21 @@ var YellowPopup = (function(ops) {
 	popup.prototype.init = function(op) {
 		
 		// set popup properties	
-		popupDiv.setAttribute("class", "yellow_popup bxshd");
+		popupDiv.setAttribute("class", "lolli_popup bxshd");
 		popupDiv.style.top = options['top'] + "px";
 		popupDiv.style.left = options['left'] + "px";
 		document.body.appendChild(popupDiv);
 		
 		// set title properties
-		title.setAttribute("class", "yellow_title");
+		title.setAttribute("class", "lolli_title");
 		title.innerHTML = options['title'];
 		
 		// set close button properties
-		closeDiv.setAttribute("class", "yellow_close");
+		closeDiv.setAttribute("class", "lolli_close");
 		closeDiv.innerHTML = options['close'];
 		
 		// set popup header properties
-		headerDiv.setAttribute("class", "yellow_header");
+		headerDiv.setAttribute("class", "lolli_header");
 		//headerDiv.appendChild(title);
 		//headerDiv.appendChild(closeDiv);
 		this.setupHeader(title, closeDiv);
@@ -82,7 +83,7 @@ var YellowPopup = (function(ops) {
 		
 		// iframe to load data
 		popupDiv.appendChild(iframe);
-		iframe.setAttribute("class", "yellow_iframe");
+		iframe.setAttribute("class", "lolli_iframe");
 		
 		// set 'loading...' in the popup and then set url
 		iframe.contentDocument.write("<html><body><div style='width:100%; "+
@@ -91,7 +92,7 @@ var YellowPopup = (function(ops) {
 		iframe.setAttribute("src", options['href']);
 		resizePopup();
 		
-		resizeDiv.setAttribute("class", "yellow_drag");
+		resizeDiv.setAttribute("class", "lolli_drag");
 		resizeDiv.addEventListener("mousedown", this.resizeMouseDownListener, false);
 		document.addEventListener("mouseup", this.resizeMouseUpListener, false);
 		document.addEventListener("mousemove", this.resizeMouseMoveListener, false);
@@ -146,7 +147,7 @@ var YellowPopup = (function(ops) {
 		yInit	= e.clientY;
 		moverDiv = popupDiv.cloneNode();
 		moverDiv.innerHTML = "";
-		moverDiv.setAttribute("class", "yellow_popup");
+		moverDiv.setAttribute("class", "lolli_popup");
 		moverDiv.style.opacity = "0.5";
 		
 		document.body.appendChild(moverDiv);
@@ -178,7 +179,7 @@ var YellowPopup = (function(ops) {
 		document.body.setAttribute("class", "noselect");
 		moverDiv = popupDiv.cloneNode();
 		moverDiv.innerHTML = "";
-		moverDiv.setAttribute("class", "yellow_popup");
+		moverDiv.setAttribute("class", "lolli_popup");
 		moverDiv.style.opacity = "0.5";
 		
 		document.body.appendChild(moverDiv);
