@@ -27,7 +27,9 @@ var YellowPopup = (function(ops) {
 		'href'	: "http://karmicbee.com/about"
 	};
 
-	var isMouseDown = false, isDragging = false, xInit =0, yInit = 0;
+	var minHeight = 300, minWidth = 400;
+	
+	var isDragging = false, isResizing = false, xInit =0, yInit = 0;
 	var width, height, xI =0, yI = 0;
 	
 	var popupDiv	= document.createElement("div");
@@ -35,7 +37,7 @@ var YellowPopup = (function(ops) {
 	var closeDiv	= popupDiv.cloneNode();
 	var iframe		= document.createElement("iframe");
 	var title		= document.createElement("span");
-	var drag		= popupDiv.cloneNode();
+	var resizeDiv	= popupDiv.cloneNode();
 	
 	var moverDiv;
 	
@@ -89,14 +91,14 @@ var YellowPopup = (function(ops) {
 		iframe.setAttribute("src", options['href']);
 		resizePopup();
 		
-		drag.setAttribute("class", "yellow_drag");
-		drag.addEventListener("mousedown", this.dragMouseDownListener, false);
-		document.addEventListener("mouseup", this.dragMouseUpListener, false);
-		document.addEventListener("mousemove", this.dragMouseMoveListener, false);
-		popupDiv.appendChild(drag);
+		resizeDiv.setAttribute("class", "yellow_drag");
+		resizeDiv.addEventListener("mousedown", this.resizeMouseDownListener, false);
+		document.addEventListener("mouseup", this.resizeMouseUpListener, false);
+		document.addEventListener("mousemove", this.resizeMouseMoveListener, false);
+		popupDiv.appendChild(resizeDiv);
 		
-		document.addEventListener("mousemove", this.mouseMoveListener, false);
-		document.addEventListener("mouseup", this.mouseUpListener, false);
+		document.addEventListener("mousemove", this.dragMouseMoveListener, false);
+		document.addEventListener("mouseup", this.dragMouseUpListener, false);
 	};
 	
 	popup.prototype.setupHeader = function(title, close) {
@@ -104,7 +106,7 @@ var YellowPopup = (function(ops) {
 		
 		var titleTd = document.createElement("td");
 		titleTd.appendChild(title);
-		titleTd.addEventListener("mousedown", this.mouseDownListener, false);
+		titleTd.addEventListener("mousedown", this.dragMouseDownListener, false);
 		
 		var closeTd = document.createElement("td");
 		closeTd.style.width = "20px";
@@ -123,8 +125,8 @@ var YellowPopup = (function(ops) {
 	};
 	
 	// mouseup even handler
-	popup.prototype.mouseUpListener = function(e) {
-		isMouseDown = false;
+	popup.prototype.dragMouseUpListener = function(e) {
+		isDragging = false;
 		popupDiv.style.top = moverDiv.style.top;
 		popupDiv.style.left = moverDiv.style.left;
 		
@@ -139,7 +141,7 @@ var YellowPopup = (function(ops) {
 	};
 	
 	// mousedown handler
-	popup.prototype.mouseDownListener = function(e) {
+	popup.prototype.dragMouseDownListener = function(e) {
 		xInit	= e.clientX;
 		yInit	= e.clientY;
 		moverDiv = popupDiv.cloneNode();
@@ -149,13 +151,13 @@ var YellowPopup = (function(ops) {
 		
 		document.body.appendChild(moverDiv);
 		
-		isMouseDown = true;
+		isDragging = true;
 	};
 	
 	// mousemove handler
-	popup.prototype.mouseMoveListener = function(e) {
+	popup.prototype.dragMouseMoveListener = function(e) {
 		// check for click + drag
-		if (! isMouseDown) return false;
+		if (! isDragging) return false;
 		
 		//options['top'] = parseInt(popupDiv.style.top); // to remove "px"
 		//options['left'] = parseInt(popupDiv.style.left);
@@ -172,7 +174,7 @@ var YellowPopup = (function(ops) {
 		yInit	= e.clientY;
 	};
 
-	popup.prototype.dragMouseDownListener = function(e) {
+	popup.prototype.resizeMouseDownListener = function(e) {
 		document.body.setAttribute("class", "noselect");
 		moverDiv = popupDiv.cloneNode();
 		moverDiv.innerHTML = "";
@@ -181,29 +183,29 @@ var YellowPopup = (function(ops) {
 		
 		document.body.appendChild(moverDiv);
 		
-		isDragging = true;
+		isResizing = true;
 	};
 	
-	popup.prototype.dragMouseMoveListener = function(e) {
-		if (! isDragging) return false;
+	popup.prototype.resizeMouseMoveListener = function(e) {
+		if (! isResizing) return false;
 		
 		width		= parseInt(moverDiv.offsetWidth); // to remove "px"
 		height	= parseInt(moverDiv.offsetHeight);
 		
 		// set new initial positions
-		xI	= e.clientX - options["left"];
-		yI	= e.clientY - options["top"];
+		xI	= e.clientX - options["left"] < minWidth ? minWidth : e.clientX - options["left"] ;
+		yI	= e.clientY - options["top"] < minHeight ? minHeight : e.clientY - options["top"] ;
 		
 		// reset coords position
 		moverDiv.style.height	= yI + "px";
 		moverDiv.style.width		= xI + "px";
-		
 	};
 	
 	// mouseup even handler
-	popup.prototype.dragMouseUpListener = function(e) {
+	popup.prototype.resizeMouseUpListener = function(e) {
 		document.body.setAttribute("class", "");
-		isDragging = false;
+		isResizing = false;
+
 		popupDiv.style.width = moverDiv.style.width;
 		popupDiv.style.height = moverDiv.style.height;
 		
