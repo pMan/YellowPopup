@@ -1,4 +1,4 @@
-YellowPopup
+Lollipop
 ===========
 
-A lighweight draggable alternative to heavy javascript popups.
+A light weight, draggable, resizeable alternative to heavy javascript popups.
