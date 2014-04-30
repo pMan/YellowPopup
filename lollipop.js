@@ -25,7 +25,7 @@ var Lollipop = (function(ops) {
 		'close'	: "X",
 		'top'	: "100",
 		'left'	: "180",
-		'href'	: "http://karmicbee.com/about"
+		'href'	: "http://www.google.com/custom?q=test&btnG=Search"
 	};
 
 	var minHeight = 300, minWidth = 400;
@@ -34,13 +34,13 @@ var Lollipop = (function(ops) {
 	var width, height, xI =0, yI = 0;
 	
 	var popupDiv	= document.createElement("div");
-	var headerDiv	= popupDiv.cloneNode();
-	var closeDiv	= popupDiv.cloneNode();
+	var headerDiv	= popupDiv.cloneNode(false);
+	var closeDiv	= popupDiv.cloneNode(false);
 	var iframe		= document.createElement("iframe");
 	var title		= document.createElement("span");
-	var resizeDiv	= popupDiv.cloneNode();
+	var resizeDiv	= popupDiv.cloneNode(false);
 	
-	var moverDiv;
+	var moverDiv, workaround;
 	
 	// constructor
 	var popup = function(ops) {
@@ -131,13 +131,14 @@ var Lollipop = (function(ops) {
 		popupDiv.style.top = moverDiv.style.top;
 		popupDiv.style.left = moverDiv.style.left;
 		
+		if (moverDiv.parentNode !== null)
 		moverDiv.parentNode.removeChild(moverDiv);
 	};
 	
 	// click handler
 	popup.prototype.closeListener = function(e) {
-		e.preventDefault();
-		e.stopPropagation();
+		//e.preventDefault();
+		//e.stopPropagation();
 		popupDiv.parentNode.removeChild(popupDiv);
 	};
 	
@@ -145,7 +146,7 @@ var Lollipop = (function(ops) {
 	popup.prototype.dragMouseDownListener = function(e) {
 		xInit	= e.clientX;
 		yInit	= e.clientY;
-		moverDiv = popupDiv.cloneNode();
+		moverDiv = popupDiv.cloneNode(false);
 		moverDiv.innerHTML = "";
 		moverDiv.setAttribute("class", "lolli_popup");
 		moverDiv.style.opacity = "0.5";
@@ -177,12 +178,17 @@ var Lollipop = (function(ops) {
 
 	popup.prototype.resizeMouseDownListener = function(e) {
 		document.body.setAttribute("class", "noselect");
-		moverDiv = popupDiv.cloneNode();
+		moverDiv = popupDiv.cloneNode(false);
 		moverDiv.innerHTML = "";
 		moverDiv.setAttribute("class", "lolli_popup");
 		moverDiv.style.opacity = "0.5";
 		
+		workaround = popupDiv.cloneNode(false);
+		workaround.innerHTML = "";
+		workaround.style.opacity = "0.0";
+		
 		document.body.appendChild(moverDiv);
+		document.body.appendChild(workaround);
 		
 		isResizing = true;
 	};
@@ -190,16 +196,14 @@ var Lollipop = (function(ops) {
 	popup.prototype.resizeMouseMoveListener = function(e) {
 		if (! isResizing) return false;
 		
-		width		= parseInt(moverDiv.offsetWidth); // to remove "px"
-		height	= parseInt(moverDiv.offsetHeight);
-		
 		// set new initial positions
-		xI	= e.clientX - options["left"] < minWidth ? minWidth : e.clientX - options["left"] ;
-		yI	= e.clientY - options["top"] < minHeight ? minHeight : e.clientY - options["top"] ;
+		xI	= e.clientX - parseInt(options["left"]) ;
+		yI	= e.clientY - parseInt(options["top"]) ;
 		
 		// reset coords position
 		moverDiv.style.height	= yI + "px";
-		moverDiv.style.width		= xI + "px";
+		moverDiv.style.width	= xI + "px";
+		document.getElementById("testt").innerHTML = xI + "px";
 	};
 	
 	// mouseup even handler
@@ -212,7 +216,11 @@ var Lollipop = (function(ops) {
 		
 		resizePopup();
 		
+		if (moverDiv.parentNode !== null)
 		moverDiv.parentNode.removeChild(moverDiv);
+		
+		if (workaround !== undefined && workaround.parentNode !== null)
+		workaround.parentNode.removeChild(workaround);
 	};
 	
 	return popup;
