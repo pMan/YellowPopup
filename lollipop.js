@@ -57,6 +57,10 @@ var Lollipop = (function(ops) {
 		iframe.style.height = popupHeight - headerHeight;
 	};
 	
+	var addEvent = function(elem, evnt, func) {
+		elem.addEventListener ? elem.addEventListener(evnt,func,false) : elem.attachEvent("on"+evnt, func) ;
+	};
+	
 	// initializations
 	popup.prototype.init = function(op) {
 		
@@ -93,13 +97,13 @@ var Lollipop = (function(ops) {
 		resizePopup();
 		
 		resizeDiv.setAttribute("class", "lolli_drag");
-		resizeDiv.addEventListener("mousedown", this.resizeMouseDownListener, false);
-		document.addEventListener("mouseup", this.resizeMouseUpListener, false);
-		document.addEventListener("mousemove", this.resizeMouseMoveListener, false);
+		addEvent(resizeDiv, "mousedown", this.resizeMouseDownListener); //resizeDiv.addEventListener("mousedown", this.resizeMouseDownListener, false);
+		addEvent(document, "mouseup", this.resizeMouseUpListener); //document.addEventListener("mouseup", this.resizeMouseUpListener, false);
+		addEvent(document, "mousemove", this.resizeMouseMoveListener); //document.addEventListener("mousemove", this.resizeMouseMoveListener, false);
 		popupDiv.appendChild(resizeDiv);
 		
-		document.addEventListener("mousemove", this.dragMouseMoveListener, false);
-		document.addEventListener("mouseup", this.dragMouseUpListener, false);
+		addEvent(document, "mousemove", this.dragMouseMoveListener); //document.addEventListener("mousemove", this.dragMouseMoveListener, false);
+		addEvent(document, "mouseup", this.dragMouseUpListener); //document.addEventListener("mouseup", this.dragMouseUpListener, false);
 	};
 	
 	popup.prototype.setupHeader = function(title, close) {
@@ -107,12 +111,12 @@ var Lollipop = (function(ops) {
 		
 		var titleTd = document.createElement("td");
 		titleTd.appendChild(title);
-		titleTd.addEventListener("mousedown", this.dragMouseDownListener, false);
+		addEvent(titleTd, "mousedown", this.dragMouseDownListener); //titleTd.addEventListener("mousedown", this.dragMouseDownListener, false);
 		
 		var closeTd = document.createElement("td");
 		closeTd.style.width = "20px";
 		closeTd.appendChild(close);
-		closeTd.addEventListener("click", this.closeListener, true);
+		addEvent(closeTd, "click", this.closeListener); //closeTd.addEventListener("click", this.closeListener, true);
 		
 		var tr = document.createElement("tr");
 		tr.appendChild(titleTd);
