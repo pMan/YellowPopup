@@ -1,158 +1,104 @@
-/****************************************************************************
-    Lollipop is a light weight, customizable, draggable  and resizeable
-    javascript popup which is designed to avoid loading heavy libraries just
-    for a popup.
-    
-    Copyright (C) 2014 pMan and karmicbee.
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-****************************************************************************/
-var Lollipop = (function(ops) {
-	var options = {
-		'title'	: "Lookup Dictionaries & Thesaurus",
+var Lollipop = (function(config){
+	var lollipop;
+	
+	var minHeight = 300, minWidth = 400;
+	var isDragging = false, isResizing = false, xInit =0, yInit = 0;
+	var width, height, xI =0, yI = 0;
+	var popupDiv;
+	var headerDiv;
+	var closeDiv;
+	var iframe;
+	var title;
+	
+	// table that builds header
+	var closeTd;
+	var titleTd;
+	var tr;
+	var table;
+	
+	var resizeDiv;
+	var moverDiv, workaround;
+	
+	// global config object
+	var globalConfig = {
+		'title'	: "Lollipop!",
 		'close'	: "X",
 		'top'	: "100",
 		'left'	: "180",
-		'href'	: "http://www.google.com/custom?q=test&btnG=Search"
-	};
-
-	var minHeight = 300, minWidth = 400;
-	
-	var isDragging = false, isResizing = false, xInit =0, yInit = 0;
-	var width, height, xI =0, yI = 0;
-	
-	var popupDiv	= document.createElement("div");
-	var headerDiv	= popupDiv.cloneNode(false);
-	var closeDiv	= popupDiv.cloneNode(false);
-	var iframe		= document.createElement("iframe");
-	var title		= document.createElement("span");
-	var resizeDiv	= popupDiv.cloneNode(false);
-	
-	var moverDiv, workaround;
-	
-	// constructor
-	var popup = function(ops) {
-		// equivalent to jQuery.extend
-		for (var prop in ops) {
-			options[prop] = ops[prop];
-		}
+		'href'	: "http://www.karmicbee.com"
 	};
 	
-	// resizes the popup
+	// for IE and others
+	var addEvent = function(elem, evnt, func) {
+		elem.addEventListener ? elem.addEventListener(evnt,func,false) : elem.attachEvent("on"+evnt, func);
+	};
+	
+	var Popup = function() {
+		
+		popupDiv	= document.createElement("div");
+		headerDiv	= popupDiv.cloneNode(false);
+		closeDiv	= popupDiv.cloneNode(false);
+		iframe		= document.createElement("iframe");
+		title		= document.createElement("span");
+		resizeDiv	= popupDiv.cloneNode(false);
+		
+		closeTd = document.createElement("td");
+		titleTd = document.createElement("td");
+		tr = document.createElement("tr");
+		table = document.createElement("table");
+		
+		title.className = "lolli_title";
+		closeDiv.className = "lolli_close";
+		closeTd.style.width = "20px";
+		headerDiv.className = "lolli_header";
+		
+		iframe.className = "lolli_iframe";
+		iframe.id =  "lolli_iframe";		
+	};
+	
+	// auto resizes the popup
 	var resizePopup = function() {
 		headerHeight = headerDiv.offsetHeight + 20;
 		popupHeight = popupDiv.offsetHeight;
 		iframe.style.height = popupHeight - headerHeight;
 	};
 	
-	var addEvent = function(elem, evnt, func) {
-		elem.addEventListener ? elem.addEventListener(evnt,func,false) : elem.attachEvent("on"+evnt, func) ;
-	};
-	
-	// initializations
-	popup.prototype.init = function(op) {
-		
-		// set popup properties	
-		popupDiv.setAttribute("class", "lolli_popup bxshd");
-		popupDiv.style.top = options['top'] + "px";
-		popupDiv.style.left = options['left'] + "px";
-		document.body.appendChild(popupDiv);
-		
-		// set title properties
-		title.setAttribute("class", "lolli_title");
-		title.innerHTML = options['title'];
-		
-		// set close button properties
-		closeDiv.setAttribute("class", "lolli_close");
-		closeDiv.innerHTML = options['close'];
-		
+	// setup the header of the popup
+	Popup.prototype.setupHeader = function() {
 		// set popup header properties
-		headerDiv.setAttribute("class", "lolli_header");
-		//headerDiv.appendChild(title);
-		//headerDiv.appendChild(closeDiv);
-		this.setupHeader(title, closeDiv);
-		popupDiv.appendChild(headerDiv);
-		
-		// iframe to load data
-		popupDiv.appendChild(iframe);
-		iframe.setAttribute("class", "lolli_iframe");
-		
-		// set 'loading...' in the popup and then set url
-		iframe.contentDocument.write("<html><body><div style='width:100%; "+
-			"color: gray; text-align: center; line-height: 100%;'><i style='padding-top: 100px;"+
-			"display: block;'>loading...</i></div></body></html>");
-		iframe.setAttribute("src", options['href']);
-		resizePopup();
-		
-		resizeDiv.setAttribute("class", "lolli_drag");
-		addEvent(resizeDiv, "mousedown", this.resizeMouseDownListener); //resizeDiv.addEventListener("mousedown", this.resizeMouseDownListener, false);
-		addEvent(document, "mouseup", this.resizeMouseUpListener); //document.addEventListener("mouseup", this.resizeMouseUpListener, false);
-		addEvent(document, "mousemove", this.resizeMouseMoveListener); //document.addEventListener("mousemove", this.resizeMouseMoveListener, false);
-		popupDiv.appendChild(resizeDiv);
-		
-		addEvent(document, "mousemove", this.dragMouseMoveListener); //document.addEventListener("mousemove", this.dragMouseMoveListener, false);
-		addEvent(document, "mouseup", this.dragMouseUpListener); //document.addEventListener("mouseup", this.dragMouseUpListener, false);
-	};
-	
-	popup.prototype.setupHeader = function(title, close) {
 		headerDiv.innerHTML = "";
 		
-		var titleTd = document.createElement("td");
+		// set title properties
+		title.innerHTML = globalConfig['title'];
 		titleTd.appendChild(title);
-		addEvent(titleTd, "mousedown", this.dragMouseDownListener); //titleTd.addEventListener("mousedown", this.dragMouseDownListener, false);
+		addEvent(titleTd, "mousedown", this.dragMouseDownListener);
 		
-		var closeTd = document.createElement("td");
-		closeTd.style.width = "20px";
-		closeTd.appendChild(close);
-		addEvent(closeTd, "click", this.closeListener); //closeTd.addEventListener("click", this.closeListener, true);
+		// set close button properties
+		closeDiv.innerHTML = globalConfig['close'];
+		closeTd.appendChild(closeDiv);
+		addEvent(closeTd, "click", this.closeListener);
 		
-		var tr = document.createElement("tr");
 		tr.appendChild(titleTd);
 		tr.appendChild(closeTd);
 		
-		var table = document.createElement("table");
 		table.style.width = "100%";
 		table.appendChild(tr);
 		
 		headerDiv.appendChild(table);
 	};
 	
-	// mouseup even handler
-	popup.prototype.dragMouseUpListener = function(e) {
-		isDragging = false;
-		popupDiv.style.top = moverDiv.style.top;
-		popupDiv.style.left = moverDiv.style.left;
-		
-		if (moverDiv.parentNode !== null)
-		moverDiv.parentNode.removeChild(moverDiv);
-	};
-	
-	// click handler
-	popup.prototype.closeListener = function(e) {
-		//e.preventDefault();
-		//e.stopPropagation();
+	// click handler for close button
+	Popup.prototype.closeListener = function(e) {
 		popupDiv.parentNode.removeChild(popupDiv);
 	};
 	
 	// mousedown handler
-	popup.prototype.dragMouseDownListener = function(e) {
+	Popup.prototype.dragMouseDownListener = function(e) {
 		xInit	= e.clientX;
 		yInit	= e.clientY;
 		moverDiv = popupDiv.cloneNode(false);
 		moverDiv.innerHTML = "";
-		moverDiv.setAttribute("class", "lolli_popup");
+		moverDiv.className = "lolli_popup";
 		moverDiv.style.opacity = "0.5";
 		
 		document.body.appendChild(moverDiv);
@@ -161,30 +107,38 @@ var Lollipop = (function(ops) {
 	};
 	
 	// mousemove handler
-	popup.prototype.dragMouseMoveListener = function(e) {
+	Popup.prototype.dragMouseMoveListener = function(e) {
 		// check for click + drag
 		if (! isDragging) return false;
 		
-		//options['top'] = parseInt(popupDiv.style.top); // to remove "px"
-		//options['left'] = parseInt(popupDiv.style.left);
-		
-		options['top'] = parseInt(moverDiv.style.top); // to remove "px"
-		options['left'] = parseInt(moverDiv.style.left);
+		globalConfig['top'] = parseInt(moverDiv.style.top); // to remove "px"
+		globalConfig['left'] = parseInt(moverDiv.style.left);
 		
 		// reset coords position
-		moverDiv.style.top	= options['top'] + e.clientY - yInit;
-		moverDiv.style.left	= options['left'] + e.clientX - xInit;
+		moverDiv.style.top	= globalConfig['top'] + e.clientY - yInit;
+		moverDiv.style.left	= globalConfig['left'] + e.clientX - xInit;
 		
 		// set new initial positions
 		xInit	= e.clientX;
 		yInit	= e.clientY;
 	};
-
-	popup.prototype.resizeMouseDownListener = function(e) {
-		document.body.setAttribute("class", "noselect");
+	
+	// mouseup even handler
+	Popup.prototype.dragMouseUpListener = function(e) {
+		isDragging = false;
+		popupDiv.style.top = moverDiv.style.top;
+		popupDiv.style.left = moverDiv.style.left;
+		
+		if (moverDiv.parentNode !== null)
+		moverDiv.parentNode.removeChild(moverDiv);
+	};
+	
+	
+	Popup.prototype.resizeMouseDownListener = function(e) {
+		document.body.className = "noselect";
 		moverDiv = popupDiv.cloneNode(false);
 		moverDiv.innerHTML = "";
-		moverDiv.setAttribute("class", "lolli_popup");
+		moverDiv.className = "lolli_popup";
 		moverDiv.style.opacity = "0.5";
 		
 		workaround = popupDiv.cloneNode(false);
@@ -197,22 +151,22 @@ var Lollipop = (function(ops) {
 		isResizing = true;
 	};
 	
-	popup.prototype.resizeMouseMoveListener = function(e) {
+	Popup.prototype.resizeMouseMoveListener = function(e) {
 		if (! isResizing) return false;
 		
 		// set new initial positions
-		xI	= e.clientX - parseInt(options["left"]) ;
-		yI	= e.clientY - parseInt(options["top"]) ;
+		xI	= e.clientX - parseInt(globalConfig["left"]) ;
+		yI	= e.clientY - parseInt(globalConfig["top"]) ;
 		
 		// reset coords position
 		moverDiv.style.height	= yI + "px";
 		moverDiv.style.width	= xI + "px";
-		document.getElementById("testt").innerHTML = xI + "px";
 	};
 	
 	// mouseup even handler
-	popup.prototype.resizeMouseUpListener = function(e) {
-		document.body.setAttribute("class", "");
+	Popup.prototype.resizeMouseUpListener = function(e) {
+		if (! isResizing) return false;
+		document.body.className = "";
 		isResizing = false;
 
 		popupDiv.style.width = moverDiv.style.width;
@@ -227,5 +181,60 @@ var Lollipop = (function(ops) {
 		workaround.parentNode.removeChild(workaround);
 	};
 	
-	return popup;
+	Popup.prototype.init = function(config) {
+		
+		for (var prop in config) {
+			globalConfig[prop] = config[prop];
+		}
+		
+		// set popup properties	
+		popupDiv.className = "lolli_popup bxshd";
+		popupDiv.style.top = globalConfig['top'] + "px";
+		popupDiv.style.left = globalConfig['left'] + "px";
+		document.body.appendChild(popupDiv);
+		
+		// set the popup header section - title and 'close' button
+		this.setupHeader();
+		popupDiv.appendChild(headerDiv);
+		
+		// iframe to load data
+		popupDiv.appendChild(iframe);
+		
+		// set 'loading...' in the popup (if possible) and then set url
+		if ('object' == typeof document.getElementById('lolli_iframe').contentWindow.document) { // non-IE browsers
+			document.getElementById('lolli_iframe').contentWindow.document.write("<html><body><div style='width:100%; "+
+				"color: gray; text-align: center; line-height: 100%;'><i style='padding-top: 100px;"+
+				"display: block;'>loading...</i></div></body></html>");
+		} else { // IE
+			try {
+				iframe.contentDocument.write("<html><body><div style='width:100%; "+
+					"color: gray; text-align: center; line-height: 100%;'><i style='padding-top: 100px;"+
+					"display: block;'>loading...</i></div></body></html>");
+			} catch (e) {
+				// this is to fix IE's 'Access denied' on iframe. Just move on.
+			}
+		}
+		iframe.setAttribute("src", globalConfig['href']);
+		resizePopup();
+		
+		resizeDiv.className = "lolli_drag";
+		
+		addEvent(resizeDiv, "mousedown", this.resizeMouseDownListener);
+		addEvent(document, "mouseup", this.resizeMouseUpListener);
+		addEvent(document, "mousemove", this.resizeMouseMoveListener);
+		
+		popupDiv.appendChild(resizeDiv);
+		
+		addEvent(document, "mousemove", this.dragMouseMoveListener);
+		addEvent(document, "mouseup", this.dragMouseUpListener);
+		
+	};
+	
+	return function() {
+		if (!lollipop) {
+			lollipop = new Popup();
+		}
+		
+		return lollipop;
+	};
 })();
