@@ -15,13 +15,13 @@
 		function show(title) {
 			var opt = {title: title, animate: true}
 			var popup = new Lollipop(opt);
-			popup.init();
+			popup.init(opt);
 		}
 	</script>
 </head>
 <body style="width:100%;">
-	<a href="#" onclick="show('lookup');" tabIndex="1">show popup</a> <br/>
-	<a href="#" onclick="show('loooooooooo');" tabIndex="1">show again</a>
+	<a href="#" onclick="show('Lollipop first');" tabIndex="1">show popup</a> <br/>
+	<a href="#" onclick="show('Lollipop Again...');" tabIndex="1">show again</a>
 	<script type="text/javascript" src="lollipop.js"></script>
 <body>
 </html>
