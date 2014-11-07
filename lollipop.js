@@ -4,20 +4,12 @@ var Lollipop = (function(config){
 	var minHeight = 300, minWidth = 400;
 	var isDragging = false, isResizing = false, xInit =0, yInit = 0;
 	var width, height, xI =0, yI = 0;
-	var popupDiv;
-	var headerDiv;
-	var closeDiv;
-	var iframe;
-	var title;
+	var popupDiv, headerDiv, closeDiv, iframe, title;
 	
 	// table that builds header
-	var closeTd;
-	var titleTd;
-	var tr;
-	var table;
+	var closeTd, titleTd, tr, table;
 	
-	var resizeDiv;
-	var moverDiv, workaround;
+	var resizeDiv, moverDiv, workaround;
 	
 	// global config object
 	var globalConfig = {
@@ -182,10 +174,7 @@ var Lollipop = (function(config){
 	};
 	
 	Popup.prototype.init = function(config) {
-		
-		for (var prop in config) {
-			globalConfig[prop] = config[prop];
-		}
+		this.setProp(config);
 		
 		// set popup properties	
 		popupDiv.className = "lolli_popup bxshd";
@@ -214,7 +203,7 @@ var Lollipop = (function(config){
 				// this is to fix IE's 'Access denied' on iframe. Just move on.
 			}
 		}
-		iframe.setAttribute("src", globalConfig['href']);
+		this.setUrl(globalConfig['href']);
 		resizePopup();
 		
 		resizeDiv.className = "lolli_drag";
@@ -228,6 +217,16 @@ var Lollipop = (function(config){
 		addEvent(document, "mousemove", this.dragMouseMoveListener);
 		addEvent(document, "mouseup", this.dragMouseUpListener);
 		
+	};
+	
+	Popup.prototype.setUrl = function(url) {
+		iframe.setAttribute("src", url);
+	};
+	
+	Popup.prototype.setProp = function(config) {
+		for (var prop in config) {
+			globalConfig[prop] = config[prop];
+		}
 	};
 	
 	return function() {
