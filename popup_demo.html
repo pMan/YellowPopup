@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<style>
@@ -8,20 +9,20 @@
 		.bxshd { box-shadow: 7px 7px 27px 0 #CBCBCB; }
 		.lolli_header { border: 1px solid #BEBEBE;margin: 4px;padding: 4px;width: auto;line-height: 20px;cursor: crosshair; }
 		.lolli_close { padding: 4px;float: right;width: auto;font-family: Comic Sans MS,serif;line-height: 12px;cursor: pointer; }
-		.lolli_iframe { border: 0 none;display: table;margin: auto;width: 99%; }
+		.lolli_iframe { border: 0 none;margin: auto;width: 99%; }
 		.lolli_drag { width: 0; height: 0; border-bottom: 14px solid #DBDBDB; border-left: 14px solid transparent; position:absolute;right:0;bottom:0; cursor:pointer;}
 	</style>
+	<script type="text/javascript" src="lollipop.js"></script>
 	<script type="text/javascript">
-		function show(title) {
-			var opt = {title: title, animate: true};
+		function show(title, url) {
+			var opt = {title: title, href: url};
 			popup = new Popup();
 			popup.init(opt);
 		}
 	</script>
 </head>
 <body style="width:100%;">
-	<a href="#" onclick="show('Lollipop first');" tabIndex="1">show popup</a> <br/>
-	<a href="#" onclick="show('Lollipop Again...');" tabIndex="1">show again</a>
-	<script type="text/javascript" src="lollipop.js"></script>
+	<a href="#" onclick="show('Lollipop first', 'http://www.karmicbee.com/contact/');" tabIndex="1">show popup</a> <br/>
+	<a href="#" onclick="show('Lollipop Again...', 'http://www.karmicbee.com/open-source-philosophy/');" tabIndex="1">show again</a>
 <body>
 </html>
