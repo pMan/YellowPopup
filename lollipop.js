@@ -39,13 +39,13 @@ function Popup() {
 };
 
 function resizePopup() {
-	headerHeight = headerDiv.offsetHeight + 20;
-	newHeight = popupDiv.offsetHeight - headerHeight;
+	var headerHeight = headerDiv.offsetHeight + 20;
+	var newHeight = popupDiv.offsetHeight - headerHeight;
 	lolliFrame.style.height = newHeight + "px";
 }
 
 Popup.prototype = {
-	
+
 	// for IE and others
 	addEvent: function(elem, evnt, func) {
 		elem.addEventListener ? elem.addEventListener(evnt,func,false) : elem.attachEvent("on"+evnt, func);
