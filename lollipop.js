@@ -1,10 +1,9 @@
 function Popup() {
-	
-	lollipop = null;;
+	if (typeof lollipop == 'object') return lollipop;
 	
 	minHeight = 300, minWidth = 400;
 	isDragging = false, isResizing = false, xInit =0, yInit = 0;
-	width = height = xI =0, yI = 0;
+	xI =0, yI = 0;
 	
 	// global config object
 	globalConfig = {
@@ -18,7 +17,7 @@ function Popup() {
 	popupDiv	= document.createElement("div");
 	headerDiv	= popupDiv.cloneNode(false);
 	closeDiv	= popupDiv.cloneNode(false);
-	iframe		= document.createElement("iframe");
+	lolliFrame		= document.createElement("iframe");
 	title		= document.createElement("span");
 	resizeDiv	= popupDiv.cloneNode(false);
 	
@@ -32,24 +31,24 @@ function Popup() {
 	closeTd.style.width = "20px";
 	headerDiv.className = "lolli_header";
 	
-	iframe.className = "lolli_iframe";
-	iframe.id =  "lolli_iframe";
+	lolliFrame.className = "lolli_iframe";
+	lolliFrame.id =  "lolli_iframe";
 	
-	return this;
+	lollipop = this;
+	return lollipop;
 };
+
+function resizePopup() {
+	headerHeight = headerDiv.offsetHeight + 20;
+	newHeight = popupDiv.offsetHeight - headerHeight;
+	lolliFrame.style.height = newHeight + "px";
+}
 
 Popup.prototype = {
 	
 	// for IE and others
 	addEvent: function(elem, evnt, func) {
 		elem.addEventListener ? elem.addEventListener(evnt,func,false) : elem.attachEvent("on"+evnt, func);
-	},
-	
-	// auto resizes the popup
-	resizePopup: function() {
-		headerHeight = headerDiv.offsetHeight + 20;
-		popupHeight = popupDiv.offsetHeight;
-		iframe.style.height = popupHeight - headerHeight;
 	},
 	
 	// setup the header of the popup
@@ -85,6 +84,10 @@ Popup.prototype = {
 	dragMouseDownListener: function(e) {
 		xInit	= e.clientX;
 		yInit	= e.clientY;
+		
+		if (typeof moverDiv !== 'undefined' && moverDiv.parentNode !== null)
+		moverDiv.parentNode.removeChild(moverDiv);
+	
 		moverDiv = popupDiv.cloneNode(false);
 		moverDiv.innerHTML = "";
 		moverDiv.className = "lolli_popup";
@@ -104,8 +107,8 @@ Popup.prototype = {
 		globalConfig['left'] = parseInt(moverDiv.style.left);
 		
 		// reset coords position
-		moverDiv.style.top	= globalConfig['top'] + e.clientY - yInit;
-		moverDiv.style.left	= globalConfig['left'] + e.clientX - xInit;
+		moverDiv.style.top	= globalConfig['top'] + e.clientY - yInit + "px";
+		moverDiv.style.left	= globalConfig['left'] + e.clientX - xInit + "px";
 		
 		// set new initial positions
 		xInit	= e.clientX;
@@ -118,16 +121,23 @@ Popup.prototype = {
 		popupDiv.style.top = moverDiv.style.top;
 		popupDiv.style.left = moverDiv.style.left;
 		
-		if (moverDiv.parentNode !== null)
+		if (typeof moverDiv !== 'undefined' && moverDiv.parentNode !== null)
 		moverDiv.parentNode.removeChild(moverDiv);
 	},
 	
 	resizeMouseDownListener: function(e) {
 		document.body.className = "noselect";
+		
+		if (typeof moverDiv !== 'undefined' && moverDiv.parentNode !== null)
+		moverDiv.parentNode.removeChild(moverDiv);
+	
 		moverDiv = popupDiv.cloneNode(false);
 		moverDiv.innerHTML = "";
 		moverDiv.className = "lolli_popup";
 		moverDiv.style.opacity = "0.5";
+		
+		if (typeof workaround !== 'undefined' && workaround.parentNode !== null)
+		workaround.parentNode.removeChild(workaround);
 		
 		workaround = popupDiv.cloneNode(false);
 		workaround.innerHTML = "";
@@ -162,7 +172,7 @@ Popup.prototype = {
 		
 		resizePopup();
 		
-		if (moverDiv.parentNode !== null)
+		if (moverDiv !== null)
 		moverDiv.parentNode.removeChild(moverDiv);
 		
 		if (workaround !== undefined && workaround.parentNode !== null)
@@ -186,7 +196,7 @@ Popup.prototype = {
 		popupDiv.appendChild(headerDiv);
 		
 		// iframe to load data
-		popupDiv.appendChild(iframe);
+		popupDiv.appendChild(lolliFrame);
 		
 		// set 'loading...' in the popup (if possible) and then set url
 		if ('object' == typeof document.getElementById('lolli_iframe').contentWindow.document) { // non-IE browsers
@@ -195,15 +205,15 @@ Popup.prototype = {
 				"display: block;'>loading...</i></div></body></html>");
 		} else { // IE
 			try {
-				iframe.contentDocument.write("<html><body><div style='width:100%; "+
+				lolliFrame.contentDocument.write("<html><body><div style='width:100%; "+
 					"color: gray; text-align: center; line-height: 100%;'><i style='padding-top: 100px;"+
 					"display: block;'>loading...</i></div></body></html>");
 			} catch (e) {
 				// this is to fix IE's 'Access denied' on iframe. Just move on.
 			}
 		}
-		iframe.setAttribute("src", globalConfig['href']);
-		this.resizePopup();
+		lolliFrame.setAttribute("src", globalConfig['href']);
+		resizePopup();
 		
 		resizeDiv.className = "lolli_drag";
 		
@@ -215,7 +225,5 @@ Popup.prototype = {
 		
 		this.addEvent(document, "mousemove", this.dragMouseMoveListener);
 		this.addEvent(document, "mouseup", this.dragMouseUpListener);
-		
-	};
-	
-};
+	}
+}
